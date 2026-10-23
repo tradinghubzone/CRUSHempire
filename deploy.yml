@@ -1,0 +1,30 @@
+name: Deploy Crash Empire to GitHub Pages + S3
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./
+          
+      - name: Configure AWS S3
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+          
+      - name: Deploy to S3
+        run: |
+          aws s3 sync ./ s3://YOUR-BUCKET-NAME --delete --exclude ".git/*" --exclude ".github/*"
+          aws s3 cp ./index.html s3://YOUR-BUCKET-NAME/index.html --content-type "text/html" --cache-control "no-cache"
+          aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_ID }} --paths "/*" || true
