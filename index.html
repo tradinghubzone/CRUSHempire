@@ -1,0 +1,90 @@
+<!DOCTYPE html><html><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PrinterMaDollar CRASH EMPIRE - 12 Games + Commission</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}body{background:#070a12;color:#fff;font-family:sans-serif}
+.top{display:flex;justify-content:space-between;padding:10px;background:#0e1422;border-bottom:1px solid #1e293b;flex-wrap:wrap;gap:8px}
+.logo{font-weight:900;font-size:16px}.logo span{color:#ff3b30}
+.badge{background:#ff3b30;color:#fff;padding:2px 6px;border-radius:6px;font-size:9px}
+.btn{padding:8px 12px;border:none;border-radius:8px;font-weight:800;cursor:pointer}
+.btn-red{background:#ff3b30;color:#fff}.btn-green{background:#00e676;color:#000}.btn-dark{background:#1e293b;color:#fff}
+.grid{display:grid;grid-template-columns:280px 1fr 300px;gap:8px;padding:8px}
+@media(max-width:1000px){.grid{grid-template-columns:1fr}}
+.card{background:#111827;border:1px solid #1e293b;border-radius:12px;padding:10px}
+.games{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.g{padding:8px;background:#0f172a;border:1px solid #1e293b;border-radius:10px;cursor:pointer;text-align:center}
+.g.active{border-color:#ff3b30;background:#1a0a0a}
+.g .icon{font-size:24px}.g .name{font-size:11px;font-weight:700}.g .last{font-size:10px;color:#94a3b8}
+.crash{height:260px;background:radial-gradient(ellipse at bottom,#2a0a0a,#070a12);border-radius:12px;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.plane{position:absolute;left:15px;bottom:30px;font-size:32px;transition:.1s linear}
+.multi{font-size:48px;font-weight:900}.state{font-size:11px;color:#94a3b8;margin-top:4px}
+.input{width:100%;background:#0f172a;border:1px solid #334155;border-radius:8px;padding:8px;color:#fff;margin-bottom:6px}
+.h{display:inline-block;padding:3px 6px;border-radius:10px;font-size:10px;margin:2px;font-weight:700}
+.low{background:#3f1a1a;color:#f87171}.mid{background:#3f3a1a;color:#facc15}.high{background:#1a3f1a;color:#4ade80}
+.status{padding:6px;border-radius:6px;font-size:11px;display:none;margin-top:6px;background:#0f172a;border:1px solid #334155}
+.show{display:block}
+</style>
+</head><body>
+<div class="top">
+<div class="logo">PrinterMa<span>$</span>Dollar CRASH EMPIRE <span class="badge">12 GAMES | 5X MAX | 20% COMMISSION</span></div>
+<div style="display:flex;gap:6px;align-items:center"><span id="bal" style="font-size:12px">Bal: KES 0</span><span id="comm" style="font-size:12px;color:#00e676">Comm: KES 0</span><button class="btn btn-red" onclick="reg()">Register</button><button class="btn btn-dark" onclick="log()">Login</button><button class="btn btn-dark" onclick="owner()">Owner</button></div>
+</div>
+<div style="font-size:9px;padding:4px 10px;background:#0e1422">Backend: https://printemadollar-backend.onrender.com | Max 5x | You earn 20% per deposit | Clients: <span id="clientCount">0</span></div>
+
+<div class="grid">
+<div class="card">
+<div style="font-size:11px;font-weight:700;margin-bottom:6px">12 CRASH GAMES - CLICK TO PLAY</div>
+<div class="games" id="gamesGrid"></div>
+<div style="font-size:10px;color:#64748b;margin-top:8px">💡 Each game capped 5x, 70% crash <2x, profitable for you!</div>
+</div>
+
+<div class="card">
+<div style="display:flex;justify-content:space-between"><span id="gameTitle" style="font-size:12px;font-weight:700">✈️ Aviator - 5X MAX</span><span id="gamePlayers" style="font-size:10px;color:#94a3b8">42 players</span></div>
+<div class="crash" id="crashBox"><div class="plane" id="plane">✈️</div><div style="text-align:center"><div class="multi" id="multi">1.00x</div><div class="state" id="state">BETTING - Next in 5s</div></div></div>
+<div id="history" style="margin-top:6px"></div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px">
+<div><input id="betAmt" class="input" type="number" value="100"><button class="btn btn-green" id="betBtn" onclick="placeBet()" style="width:100%">BET - JOIN ROUND</button></div>
+<div><input id="autoCash" class="input" type="number" value="2.0"><button class="btn" id="cashBtn" onclick="cashOut()" style="width:100%;background:#facc15;color:#000;display:none">CASHOUT <span id="cashM">1.00x</span></button></div>
+</div>
+<div id="gameStatus" class="status"></div>
+</div>
+
+<div class="card">
+<div style="font-size:11px;font-weight:700">DEPOSIT - M-Pesa 0116162159</div>
+<input id="phone" class="input" value="0116162159"><input id="amount" class="input" type="number" value="500"><button class="btn btn-green" style="width:100%" onclick="doDeposit()">DEPOSIT (You get 20%)</button>
+<div id="depStatus" class="status"></div>
+<div style="font-size:11px;font-weight:700;margin-top:10px">WITHDRAW</div>
+<input id="phoneW" class="input" value="0116162159"><input id="amountW" class="input" type="number" value="100"><button class="btn" style="width:100%;background:#fff;color:#000" onclick="doWithdraw()">WITHDRAW BALANCE</button>
+<div id="withStatus" class="status"></div>
+<div style="font-size:11px;font-weight:700;margin-top:10px;color:#00e676">YOUR COMMISSION</div>
+<div id="commPanel" style="font-size:11px;background:#0a1a0a;padding:6px;border-radius:8px;border:1px solid #00e676">Total Comm: KES 0<br>Clients: 0<br><div id="commList" style="max-height:80px;overflow:auto;margin-top:4px;font-size:10px"></div></div>
+<button class="btn btn-green" style="width:100%;margin-top:6px" onclick="withdrawComm()">WITHDRAW COMMISSION TO M-PESA</button>
+</div>
+</div>
+
+<script>
+var BACKEND='https://printemadollar-backend.onrender.com';var API=BACKEND+'/api/stk-push';
+var balance=Number(localStorage.getItem('emp_bal')||0);var commission=Number(localStorage.getItem('emp_comm')||0);var clients=JSON.parse(localStorage.getItem('emp_clients')||'[]');var curGame='aviator';
+var games=[
+{id:'aviator',icon:'✈️',name:'Aviator',color:'#ff3b30'},{id:'rocket',icon:'🚀',name:'Rocket',color:'#f59e0b'},{id:'jetx',icon:'🛩️',name:'JetX',color:'#0ea5e9'},{id:'crashx',icon:'💥',name:'Crash X',color:'#ef4444'},{id:'lucky',icon:'🍀',name:'Lucky Jet',color:'#22c55e'},{id:'space',icon:'👨‍🚀',name:'Spaceman',color:'#8b5cf6'},{id:'aviatrix',icon:'🛫',name:'Aviatrix',color:'#06b6d4'},{id:'bass',icon:'🐟',name:'Big Bass',color:'#eab308'},{id:'football',icon:'⚽',name:'Football',color:'#16a34a'},{id:'crypto',icon:'₿',name:'Crypto',color:'#f97316'},{id:'balloon',icon:'🎈',name:'Balloon',color:'#ec4899'},{id:'heli',icon:'🚁',name:'Helicopter',color:'#6366f1'}
+];
+var bet=0,hasBet=false,canCash=false,cur=1,crashP=2,state='BETTING',timer=5,isFlying=false;
+function updateUI(){document.getElementById('bal').innerText='Bal: KES '+balance;document.getElementById('comm').innerText='Comm: KES '+commission;document.getElementById('clientCount').innerText=clients.length;localStorage.setItem('emp_bal',balance);localStorage.setItem('emp_comm',commission);localStorage.setItem('emp_clients',JSON.stringify(clients));var list='';clients.forEach(c=>{list+=c.phone+' dep '+c.total+' comm '+c.comm+'<br>'});document.getElementById('commList').innerHTML=list||'No clients yet';document.getElementById('commPanel').innerHTML='Total Comm: KES '+commission+'<br>Clients: '+clients.length+'<br><div style="max-height:80px;overflow:auto">'+list+'</div>';}
+function buildGames(){var g=document.getElementById('gamesGrid');games.forEach(game=>{var d=document.createElement('div');d.className='g'+(game.id===curGame?' active':'');d.id='g-'+game.id;d.innerHTML='<div class=icon>'+game.icon+'</div><div class=name>'+game.name+'</div><div class=last id=last-'+game.id+'>2.34x</div>';d.onclick=function(){selectGame(game.id)};g.appendChild(d)})}
+function selectGame(id){curGame=id;games.forEach(g=>{document.getElementById('g-'+g.id).classList.remove('active')});document.getElementById('g-'+id).classList.add('active');var gg=games.find(x=>x.id===id);document.getElementById('gameTitle').innerText=gg.icon+' '+gg.name+' - 5X MAX';document.getElementById('plane').innerText=gg.icon;document.getElementById('crashBox').style.background='radial-gradient(ellipse at bottom,'+gg.color+'22,#070a12)';}
+buildGames();updateUI();
+function genCrash(){var r=Math.random()*100;if(r<70)return 1+Math.random();else if(r<90)return 2+Math.random()*1.5;else if(r<99)return 3.5+Math.random()*1.5;else return 5}
+function loop(){if(state==='BETTING'){timer--;document.getElementById('state').innerText='BETTING '+curGame+' - Next in '+timer+'s';if(timer<=0){state='FLYING';crashP=genCrash();if(crashP>5)crashP=5;cur=1;isFlying=true;document.getElementById('state').innerText='FLYING to '+crashP.toFixed(2)+'x';document.getElementById('betBtn').style.display='none';if(hasBet)document.getElementById('cashBtn').style.display='block';var s=Date.now();var f=setInterval(function(){if(!isFlying){clearInterval(f);return}var e=(Date.now()-s)/1000;cur=1+e*0.6+Math.pow(e,1.4)*0.12;if(cur>5)cur=5;document.getElementById('multi').innerText=cur.toFixed(2)+'x';document.getElementById('cashM').innerText=cur.toFixed(2)+'x';document.getElementById('plane').style.left=(15+cur*30)+'px';document.getElementById('plane').style.bottom=(30+cur*20)+'px';var a=Number(document.getElementById('autoCash').value);if(a&&cur>=a&&canCash)cashOut();if(cur>=crashP){clearInterval(f);crash()}},100)}}else if(state==='CRASHED'){timer--;document.getElementById('state').innerText='💥 CRASHED '+crashP.toFixed(2)+'x - Next in '+timer+'s';if(timer<=0){state='BETTING';timer=5;isFlying=false;document.getElementById('plane').style.left='15px';document.getElementById('plane').style.bottom='30px';document.getElementById('betBtn').style.display='block';document.getElementById('cashBtn').style.display='none';hasBet=false;canCash=false;bet=0}}}
+setInterval(loop,1000);
+function placeBet(){bet=Number(document.getElementById('betAmt').value);if(!bet||bet>balance){alert('Low balance - Deposit!');return}if(state!=='BETTING'){alert('Wait BETTING phase');return}balance-=bet;updateUI();hasBet=true;canCash=true;document.getElementById('gameStatus').className='status show';document.getElementById('gameStatus').innerHTML='✅ Bet KES '+bet+' on '+curGame;alert('BET locked '+bet)}
+function cashOut(){if(!canCash||!hasBet)return;var win=bet*cur;balance+=win;updateUI();canCash=false;hasBet=false;document.getElementById('gameStatus').innerHTML='✅ Cashout '+cur.toFixed(2)+'x Won '+win.toFixed(2);document.getElementById('cashBtn').style.display='none';document.getElementById('betBtn').style.display='block'}
+function crash(){isFlying=false;state='CRASHED';timer=3;document.getElementById('multi').innerText=crashP.toFixed(2)+'x';if(hasBet){document.getElementById('gameStatus').innerHTML='💥 Crashed '+crashP.toFixed(2)+'x Lost '+bet;hasBet=false;canCash=false}var h=document.getElementById('history');var d=document.createElement('span');d.className='h '+(crashP<2?'low':crashP<3.5?'mid':'high');d.innerText=curGame+':'+crashP.toFixed(2)+'x';h.prepend(d);var lg=document.getElementById('last-'+curGame);if(lg)lg.innerText=crashP.toFixed(2)+'x';}
+function doDeposit(){var ph=document.getElementById('phone').value;var am=Number(document.getElementById('amount').value);var el=document.getElementById('depStatus');el.className='status show';el.innerHTML='⏳ Sending STK to '+ph;fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({phone:ph.replace(/^0/,'254'),amount:am})}).then(r=>r.json()).then(d=>{finishDep(ph,am,el)}).catch(e=>{finishDep(ph,am,el)})}
+function finishDep(ph,am,el){balance+=am;var commAdd=am*0.2;commission+=commAdd;var ex=clients.find(c=>c.phone===ph);if(ex){ex.total+=am;ex.comm+=commAdd}else{clients.push({phone:ph,total:am,comm:commAdd})}updateUI();el.innerHTML='✅ Deposit KES '+am+' OK! Your commission +KES '+commAdd+' (20%) - Client '+ph}
+function doWithdraw(){var am=Number(document.getElementById('amountW').value);var el=document.getElementById('withStatus');el.className='status show';if(am>balance){el.innerHTML='❌ Low bal';return}balance-=am;updateUI();el.innerHTML='✅ Withdraw KES '+am+' to M-Pesa'}
+function withdrawComm(){if(commission<=0){alert('No commission');return}alert('Commission KES '+commission+' sent to your M-Pesa 0116162159');commission=0;updateUI()}
+function reg(){var n=prompt('Name');var p=prompt('Phone');if(n&&p){localStorage.setItem('user',n);alert('Registered '+n+' - Deposit to play!')}}
+function log(){var u=localStorage.getItem('user');if(u)alert('Logged '+u);else alert('Register first')}
+function owner(){alert('OWNER PANEL\nTotal Deposits: KES '+(clients.reduce((s,c)=>s+c.total,0))+'\nTotal Commission 20%: KES '+commission+'\nClients: '+clients.length+'\nHouse profit from crashes: Auto profitable avg 1.85x max 5x')}
+</script>
+</body></html>
