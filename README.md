@@ -1,0 +1,2 @@
+# CRUSHempire
+Mone follows money
